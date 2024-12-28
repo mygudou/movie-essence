@@ -1,0 +1,5 @@
+certifi
+openai-whisper
+transformers
+torch
+librosa
