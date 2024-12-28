@@ -8,16 +8,10 @@ from transformers import WhisperForConditionalGeneration, WhisperProcessor
 
 # 定义全局变量
 MODEL_NAME = "openai/whisper-large-v3-turbo"
-OUTPUT_DIRECTORY = "./transcriptions"
-AUDIO_OUTPUT_DIRECTORY = "./audio_files"
 
 # 加载模型和处理器
 processor = WhisperProcessor.from_pretrained(MODEL_NAME)
 model = WhisperForConditionalGeneration.from_pretrained(MODEL_NAME)
-
-# 确保输出目录存在
-os.makedirs(OUTPUT_DIRECTORY, exist_ok=True)
-os.makedirs(AUDIO_OUTPUT_DIRECTORY, exist_ok=True)
 
 def video_to_audio(video_path, audio_output_path):
     """将视频文件转换为音频文件"""
@@ -81,11 +75,12 @@ def main():
             print(f"文件不存在: {video_file}")
             continue
 
-        # 提取文件名
+        # 提取文件名和父目录
         base_name = os.path.splitext(os.path.basename(video_file))[0]
+        parent_dir = os.path.dirname(video_file)
 
         # 转换为音频文件
-        audio_output_path = os.path.join(AUDIO_OUTPUT_DIRECTORY, f"{base_name}.wav")
+        audio_output_path = os.path.join(parent_dir, f"{base_name}.wav")
         print(f"正在将视频文件转换为音频: {video_file} -> {audio_output_path}")
         video_to_audio(video_file, audio_output_path)
 
@@ -94,7 +89,7 @@ def main():
         transcription = transcribe_audio(audio_output_path)
 
         # 保存转录结果
-        transcription_output_path = os.path.join(OUTPUT_DIRECTORY, f"{base_name}.txt")
+        transcription_output_path = os.path.join(parent_dir, f"{base_name}.txt")
         with open(transcription_output_path, "w", encoding="utf-8") as f:
             f.write(transcription)
 
